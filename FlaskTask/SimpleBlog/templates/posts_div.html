@@ -1,9 +1,7 @@
 {% extends "index.html" %}
-
-{% block title %}
-Home
-{% endblock %}
+{% block title %}Posts{% endblock %}
 {% block content %}
+<h1 align="center">{% block header %}Posts{% endblock %}</h1>
 <div id="posts">
     {% for post in posts %}
     <div class="card border-dark">
@@ -34,32 +32,12 @@ Home
     </div>
     <br>
     {% endfor %}
-</div>
-<div align="center">
-    {% macro render_pagination(pagination, endpoint) %}
-    <div class="page-items">
-        {{ pagination.first }} - {{ pagination.last }} of {{ pagination.total }}
-    </div>
-    <div class="pagination">
-        {% for page in pagination.iter_pages() %}
-        {% if page %}
-        {% if page != pagination.page %}
-        <a href="{{ url_for(endpoint, page=page) }}">{{ page }}</a>
-        {% else %}
-        <strong>{{ page }}</strong>
-        {% endif %}
-        {% else %}
-        <span class="ellipsis">…</span>
-        {% endif %}
-        {% endfor %}
-    </div>
-    {% endmacro %}
-</div>
 
+</div>
 {% block footer %}
 <div align="center">
-    <a href="/createpost">
-        <button type="button" class="btn btn-lg btn-success">Create a Post</button>
+    <a href="/home">
+        <button type="button" class="btn btn-lg btn-secondary">Back</button>
     </a>
 </div>
 {% endblock %}
