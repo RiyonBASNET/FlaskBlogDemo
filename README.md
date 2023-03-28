@@ -6,7 +6,7 @@ Used SQLite as the database
 
 User authentication
 
-A new user can create an account using an email, a username, and password confirmation.
+A new user can create an account using an email(assuming the email is valid), a username, and password confirmation
 
 Existing user can login with their email and password
 
