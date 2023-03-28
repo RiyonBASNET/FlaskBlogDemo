@@ -4,7 +4,7 @@ A blog application in Python using Flask
 Used SQLAlchemy as the ORM 
 Used SQLite as the database 
 
-For User authentication
+For User authentication\n
 A new user can create an account using an email, a username, and password confirmation.
 
 Existing user can login with their email and password
