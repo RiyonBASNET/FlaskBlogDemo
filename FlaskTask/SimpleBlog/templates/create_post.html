@@ -2,8 +2,10 @@
 {% block title %}Create Post{% endblock %}
 {% block content %}
 <h1 align="center"> Create a Post</h1>
-<form action="" method="post">
-    <textarea name="text" id="text" cols="30" rows="10" class="form-control"></textarea>
+<form method="post">
+
+    <input type="text" id="title" name="title" placeholder="Title" class="form-control"><br>
+    <textarea name="text" id="text" class="form-control"></textarea>
     <br>
     <div align="center">
         <button type="submit" class="btn btn-lg btn-primary">Post</button>

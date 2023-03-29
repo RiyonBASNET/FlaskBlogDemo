@@ -1,8 +1,11 @@
 {% extends "posts_div.html" %}
-{% block title %}{{username}}'s Posts{% endblock %}
+
+{% block title %}{{username}}{% endblock %}
+
 {% block header %}
-{{username}}'s Posts
+<h1 align="center">{{username}}'s Posts</h1>
 {% endblock %}
+
 {% block footer %}
 <div align="center">
     <a href="/home">

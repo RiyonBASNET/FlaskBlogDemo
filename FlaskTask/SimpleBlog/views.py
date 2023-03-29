@@ -9,25 +9,37 @@ views = Blueprint("views", __name__)
 
 
 @views.route("/")
-@views.route("/home")
+@views.route("/home/")
 def home():
-    posts = Post.query.order_by(Post.id.desc()).all()
+    posts = Post.query.order_by(Post.id.desc())
 
-    page = db.paginate(db.select(Post).order_by(Post.date_created))
+    post = Post.query.order_by(Post.date_created.desc())
 
-    return render_template("home.html", user=current_user, posts=posts, page=page)
+    page = request.args.get('page')
+
+    if page and page.isdigit():
+        page = int(page)
+    else:
+        page = 1
+
+    pages = post.paginate(page=page, per_page=3)
+
+    return render_template("home.html", user=current_user, posts=posts, pages=pages)
 
 
 @views.route("/createpost", methods=['GET', 'POST'])
 @login_required
 def create_post():
     if request.method == 'POST':
+        title = request.form.get('title')
         text = request.form.get('text')
 
-        if not text:
+        if not title:
+            flash('Title cannot be empty', category='error')
+        elif not text:
             flash('Post cannot be empty', category='error')
         else:
-            post = Post(text=text, author=current_user.id)
+            post = Post(title=title, text=text, author=current_user.id)
             db.session.add(post)
             db.session.commit()
             flash('Post created', category='success')
@@ -43,7 +55,7 @@ def delete_post(id):
 
     if not post:
         flash("Post does not exist.", category='error')
-    elif current_user.id != post.id:
+    elif current_user.id != post.author:
         flash('You do not have permission to delete this post', category='error')
     else:
         db.session.delete(post)
@@ -62,9 +74,21 @@ def posts(username):
         flash("No user with that username", category='error')
         return redirect(url_for('views.home'))
 
-    posts = Post.query.filter_by(author=user.id).order_by(Post.id.desc()).all()
+    posts = Post.query.filter_by(
+        author=user.id).order_by(Post.date_created.desc())
 
-    return render_template("posts.html", user=current_user, posts=posts, username=username)
+    post = Post.query.order_by(Post.date_created.desc())
+
+    page = request.args.get('page')
+
+    if page and page.isdigit():
+        page = int(page)
+    else:
+        page = 1
+
+    pages = post.paginate(page=page, per_page=3)
+
+    return render_template("posts.html", user=current_user, posts=posts, pages=pages, username=username)
 
 
 @views.route("/editpost/<id>", methods=['GET', 'POST'])
@@ -74,9 +98,6 @@ def edit_post(id):
 
     if not post:
         flash("Post does not exist.", category='error')
-    # elif current_user.id != post.id:
-    #     flash('You do not have permission to edit this post', category='error')
-    #     return redirect(url_for('views.home'))
     else:
         if request.method == 'POST':
             text = request.form.get('text')
@@ -84,6 +105,9 @@ def edit_post(id):
             if not text:
                 flash('Post cannot be empty', category='error')
             else:
+                db.session.delete(post)
+                db.session.commit()
+
                 post = Post(text=text, author=current_user.id)
                 db.session.add(post)
                 db.session.commit()
@@ -91,3 +115,11 @@ def edit_post(id):
                 return redirect(url_for('views.home'))
 
     return render_template("edit_post.html", user=current_user, post=post)
+
+
+@views.route('post/<slug>')
+@login_required
+def post_detail(slug):
+    post = Post.query.filter(Post.slug == slug).first()
+
+    return render_template("post_detail.html", post=post, user=current_user)
